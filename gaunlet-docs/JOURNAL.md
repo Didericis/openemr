@@ -1,0 +1,76 @@
+# 2026-04-27
+
+## 15:12
+
+Need to figure out what user's I'm going to use. Before that also just need to
+get claude set up with the ramp config... maybe I should just do that now?
+
+## Architecture
+
+High level architecture sketch:
+
+1. Want a multi-tenant deployment. This is probably better for Hippa, and will
+   help scale organizations separately
+    - Want a deployment per organization, with their own instance of openEMR
+    - This might get expensive... to save money, there might be _some_ services
+      which are safe to exist within the same system
+    - It's important to keep PII separated from patient details for hippa: need
+      to look into exact requirements for this
+
+High level strategy for agent architecture:
+
+1. Should always strip PII out when doing queries to third party models
+    - Could go even further an just strip PII out whenever agents are sending
+      data to models in any context.
+    - Might be worth having a discrete "pii" check step when sending things to a
+      model... that would be something we want to run on the machine for the
+      tenant so nothing is sent away
+    - Agents should always source information when sending queries... are
+      probably some conventions about this already...?
+
+## Confidence
+
+There should be some way to visualize answers and quickly show whether the
+doctor should be confident in them.
+
+Before getting to the visualization aspect, let's think about categories of
+results:
+
+Also, need to define terms:
+
+_patient interaction context_ refers to all of the data used during a patient
+interaction.
+
+1. Most important initial step is figuring out who the patient is
+2. There needs to be some sort of patient id per patient that comes in
+    - Will start with prescheduled appointments, as it's the easiest usecase
+3. Doctors need to validate that the context refers to the right patient.
+    - Should present the patient's name to the doctor
+    - Should present the patient's face to the doctor
+    - Should have a brief description of the patient for the doctor to
+      distinguish
+        - This should be doctor controlled/tweaked, but probably entered by
+          default
+    - If there is any sort of ambiguity (similar names for same visit, or user
+      lookup), doctor should be presented with multiple patients (limited to 2
+      max)
+    - There should be some way for the doctor to say "this is not my patient",
+      after which they can enter patient information throughout the visit
+      (optionally)
+        - This is a failure scenario that stems from some sort of scheduling or
+          data entry error, and should be cx
+4. This should probably be admin defined
+5. Once the doctor validates the patient is correct, we can then use the patient
+   id to source data with high confidence
+
+Can think of broadly two categories of responses:
+
+### Direct Response
+
+A _direct response_ is some sort of data (whether a dashboard widget, a number,
+an answer to a question, whatever) that _directly comes from the db with no AI
+manipulation_.
+
+### Constructed Response
+
+A _constructed response_ is a response that the user added
