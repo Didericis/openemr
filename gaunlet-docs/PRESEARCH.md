@@ -39,12 +39,18 @@ planning.
 - Human-in-the-loop requirements?
     - Want a human in the loop to verify the patient is who they say
 - Audit/compliance needs?
+    - Will need to be HIPPA compliant. This is a huge rabbit hole
 
 ### 4. Team & Skill Constraints
 
 - Familiarity with agent frameworks?
+    - Team is just me, so only have to worry about myself for now. Would likely
+      want to keep the agent specific things fairly isolated so it doesn't
+      confuse developers used to main openemr functionality
 - Experience with your chosen domain?
+    - Have some familiarity
 - Comfort with eval/testing frameworks?
+    - Not comfortable (yet)
 
 ## Phase 2: Architecture Discovery
 
